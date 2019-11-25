@@ -1,0 +1,15 @@
+{
+  "name": "standupstorescraper",
+  "version": "0.0.1",
+  "description": "parse standupstore and post to telegram",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "osmosis": "^1.1.10"
+  }
+}
