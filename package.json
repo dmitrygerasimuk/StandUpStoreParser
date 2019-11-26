@@ -9,7 +9,8 @@
     "node-telegram-bot-api": "^0.40.0",
     "osmosis": "^1.1.10",
     "telegram-bot-api": "^1.3.3",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "mongodb": "^3.3.5"
   },
   "devDependencies": {
     "mongodb": "^3.3.5"
