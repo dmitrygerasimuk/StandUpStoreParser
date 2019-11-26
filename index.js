@@ -1,6 +1,16 @@
 // jshint: es6
 process.env.NTBA_FIX_350 = '1';
-const fs = require('fs');
+
+
+var MongoClient = require('mongodb').MongoClient;
+
+const COLLECTION = 'standupparser-base2';
+//const COLLECTION = 'hey';
+
+const url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
+var idArray=[];
+
+
 
 const TOKEN = "960806477:AAHDFrxvFaG4KhPUkF9AUXiRUUi2lae_Mb4";
 const CHANNEL = "thatisnotfunny";
@@ -30,27 +40,130 @@ const standUpParser = {
 };
 
 
-const path = './student.txt';
+checkBase = (idList,_idList) => {
+    //console.log(idList);
+    console.log('Checking...');
 
-try {
-  if (fs.existsSync(path)) {
-    //file exists
-    console.log('File exists!');
-    let rawdata = fs.readFileSync('student.txt');
-    standUpParser.savedIdList = JSON.parse(rawdata);
-    let _rawdata = fs.readFileSync('myArray.txt');
-    standUpParser.savedArray = JSON.parse(_rawdata);
+    if (!_.isEmpty(thisdifference(idList,_idList))) {
 
+        
+        console.log(thisdifference(idList,_idList));
+        printNewEvent(thisdifference(idList,_idList),myArray);
 
 
-
-  } else {
-      console.log('No file');
-  }
-} catch(err) {
-  console.error(err)
-  console.log('No file');
+        } else {
+            console.log('Nothing changed');
+        }
+    
 }
+
+findInsideDB = (idlist) => {
+
+};
+
+insertNewId = (id) => {
+    MongoClient.connect(url, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection(COLLECTION);
+        songs.insertOne({id:id});
+        client.close(function(err) {
+            console.log(`Added id: ${id} to the base`);
+
+            });
+
+
+});
+};
+
+
+populateBase = (idList) => {
+    MongoClient.connect(url, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection(COLLECTION);
+        idList.forEach(element => {
+            songs.insertOne({id: element});
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+
+};
+
+getIdfromDB = (idList,myArray) => {
+
+
+
+MongoClient.connect(url, function(err, client) {
+    let db = client.db('heroku_hgmz9f00')
+    let songs = db.collection(COLLECTION);
+    var emptyBase;
+    
+
+   
+    songs.find().toArray(function(err,item) {
+        
+        if (item.length === 0 ) {
+            console.log('Base is empty');
+            
+        } else 
+        {
+            console.log('Base is populated');
+          
+        }
+
+    });
+
+    songs.find().each(function(err,item) {
+        
+        if (item != null) {
+        
+         idArray.push(item.id); 
+          //console.log(item.id);
+        }
+
+    });
+
+    
+    
+
+    //noinspection JSDeprecatedSymbols
+    /*
+    songs.find().each(function(err, item) {
+
+    console.log(item.length);
+     if (item != null) {
+          console.log(item.id); 
+        }
+
+    });
+
+    */
+
+    client.close(function(err) {
+        if (idArray.length ===0 ) {
+            console.log('No base');
+            populateBase(idList);
+            return idArray;
+        } else { 
+           // console.log(idArray);
+           console.log('Yes base');
+            checkBase(idList,idArray);
+            return idArray;
+        }
+        
+
+    });
+}); 
+};
+
+
+
+ 
+
+
 
 function thisdifference(a1, a2) {
     var result = [];
@@ -104,7 +217,7 @@ console.log(eArray.length-1);
                 msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. `;
                 var strURL = getUrls(eArray[j][4]).values().next().value;
                 strURL = strURL.substring(0, strURL.length-3);
-
+                insertNewId(eArray[j][0]);
                 sendMessage(msg,strURL);
 
                 
@@ -173,6 +286,9 @@ function checkUpdates(array) {
         if (_firstID === firstID) { console.log('First ID equal'); };
         if (_len === len) { console.log('Len eq');};
         if (_lastID === lastID) { console.log('last id equal');};
+
+
+       
         //console.log( idList.diff(standUpParser.savedIdList));
         //console.log(_(idList).difference(standUpParser.savedIdList));
         //console.log(_.difference(idList, standUpParser.savedIdList));
@@ -256,6 +372,8 @@ function niceParse(data) {
  };
 
 
+runParser = () => {
+
 
 osmosis
     .get('https://standupstore.ru')
@@ -280,26 +398,26 @@ osmosis
 
 
     }).done(function(){
-        _counter++;
-       console.log(_counter);
+        
         
         //console.log(myArray);
-        
+        // i have myArray
+        // i have idList
+
+
         console.log(myArray.length-1);
         
         console.log(myArray[0][0])
-        let _data = JSON.stringify(idList,null, 2);
-        console.log(_data);
-        fs.writeFileSync('student.txt', _data);
+        
+        // get old ID from base
+        // find new ID
+        // cal print with new ID
 
-        let _array = JSON.stringify(myArray,null, 2);
-        fs.writeFileSync('myArray.txt', _array);
+        getIdfromDB(idList,myArray);
 
-        storeValues(myArray);
+        
+       
 
-        myArray=[];
-        idList=[];
-      
         
 
 
@@ -335,4 +453,12 @@ osmosis
    */
 
 //},1000);
+};
 
+
+
+    
+
+    runParser()
+    
+    

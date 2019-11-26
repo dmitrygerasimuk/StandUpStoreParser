@@ -1,0 +1,11 @@
+const mongodb = require('mongodb');
+let uri = '';
+
+
+var MongoClient = require('mongodb').MongoClient;
+var url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
+
+MongoClient.connect(url, function(err, db) {
+
+    
+}); 
