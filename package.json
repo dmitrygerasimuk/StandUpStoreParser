@@ -1,5 +1,5 @@
 {
-  "name": "standupstorescraper",
+  "name": "StandUpStoreParser",
   "version": "0.0.1",
   "description": "parse standupstore and post to telegram",
   "main": "index.js",
