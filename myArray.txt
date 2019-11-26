@@ -1,12 +1,5 @@
 [
   [
-    "60813",
-    "26 ноября, 21:30",
-    "0",
-    "500",
-    "background-image:url('https://standupstore.ru/wp-content/uploads/2019/03/e508ee6b-ac1e-4d96-a1b9-54d88ec2b6a3.jpg');"
-  ],
-  [
     "58859",
     "27 ноября, 19:00",
     "0",
@@ -16,7 +9,7 @@
   [
     "60816",
     "27 ноября, 21:30",
-    "78",
+    "73",
     "750",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/11/aed2e2ba-cd12-4c29-91c8-3f79d32511f8.jpg');"
   ],
@@ -72,7 +65,7 @@
   [
     "60357",
     "30 ноября, 19:30",
-    "2",
+    "1",
     "750",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/03/61d5b08d-c5a4-43c8-b59e-f6eb5cc2c2c0.jpg');"
   ],
@@ -107,14 +100,14 @@
   [
     "61591",
     "02 декабря, 18:40",
-    "58",
+    "56",
     "500",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/08/12c8c5ef-377d-4046-a97a-ac11bf3da8ce.jpg');"
   ],
   [
     "62771",
     "02 декабря, 21:30",
-    "88",
+    "86",
     "1000",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/11/f2389622-1164-467f-99c4-2df32aac0ee3.jpeg');"
   ],
@@ -135,7 +128,7 @@
   [
     "61593",
     "04 декабря, 18:40",
-    "1",
+    "0",
     "500",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/08/12c8c5ef-377d-4046-a97a-ac11bf3da8ce.jpg');"
   ],
@@ -205,7 +198,7 @@
   [
     "62478",
     "08 декабря, 18:00",
-    "37",
+    "39",
     "500",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/08/12c8c5ef-377d-4046-a97a-ac11bf3da8ce.jpg');"
   ],
@@ -219,14 +212,14 @@
   [
     "63288",
     "10 декабря, 19:00",
-    "112",
+    "110",
     "750",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/11/2d22ef50-8435-4d91-8490-9d593a657088.jpeg');"
   ],
   [
     "63208",
     "15 декабря, 23:20",
-    "148",
+    "147",
     "1500",
     "background-image:url('https://standupstore.ru/wp-content/uploads/2019/11/9be743b9-19f9-4860-9815-4957a0d9a878.jpg');"
   ]
