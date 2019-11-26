@@ -1,0 +1,15 @@
+'use strict'
+ 
+const MongoClient = require('mongodb').MongoClient
+const dbUri = process.env.MONGOLAB_URI ||
+  process.env.MONGODB_URI ||
+  'mongodb://localhost:27017'
+MongoClient.connect(dbUri, {useUnifiedTopology: true }, (err, db) => {
+  if (err) { return console.err(err) }
+  console.log('Connected correctly to mongodb')
+ 
+  const collection = db.collection('urls')
+
+
+
+})

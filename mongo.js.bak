@@ -1,0 +1,73 @@
+var MongoClient = require('mongodb').MongoClient;
+
+const COLLECTION = 'standupparser-base';
+//const COLLECTION = 'hey';
+
+const url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
+var idArray=[];
+
+getIdfromDB = () => {
+
+
+
+MongoClient.connect(url, function(err, client) {
+    let db = client.db('heroku_hgmz9f00')
+    let songs = db.collection(COLLECTION);
+    var emptyBase;
+    
+
+   
+    songs.find().toArray(function(err,item) {
+        
+        if (item.length === 0 ) {
+            console.log('Base is empty');
+            
+        } else 
+        {
+            console.log('Base is populated');
+          
+        }
+
+    });
+
+    songs.find().each(function(err,item) {
+        
+        if (item != null) {
+        
+         idArray.push(item.id); 
+          //console.log(item.id);
+        }
+
+    });
+
+    
+    
+
+    //noinspection JSDeprecatedSymbols
+    /*
+    songs.find().each(function(err, item) {
+
+    console.log(item.length);
+     if (item != null) {
+          console.log(item.id); 
+        }
+
+    });
+
+    */
+
+    client.close(function(err) {
+        if (idArray.length ===0 ) {
+            console.log('No base');
+            return idArray;
+        } else { 
+            console.log(idArray);
+            return idArray;
+        }
+        
+
+    });
+}); 
+};
+
+
