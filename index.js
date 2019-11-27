@@ -39,7 +39,30 @@ const standUpParser = {
 
 };
 
+lastCheck = () => {
+    
+    MongoClient.connect(url, function(err, myclient) {
+        var d = new Date();
+        var myDate=d.toString();
+        let db = myclient.db('heroku_hgmz9f00')
+        let timeBase = db.collection('timeChecked');
+        //songs.insertOne({time:myDate});
+        timeBase.drop();
+        timeBase.insertOne({time:myDate});
+        myclient.close(function(err,date) {
+            if (err) {
+                console.log('Error ',err);
+            } else {
 
+            
+            console.log(`Time  ${myDate} to the base`);
+            }
+            });
+
+
+});
+
+}
 checkBase = (idList,_idList) => {
     //console.log(idList);
     console.log('Checking...');
@@ -54,7 +77,7 @@ checkBase = (idList,_idList) => {
         } else {
             console.log('Nothing changed');
         }
-    
+        lastCheck();
 }
 
 findInsideDB = (idlist) => {
@@ -412,7 +435,7 @@ osmosis
         // get old ID from base
         // find new ID
         // cal print with new ID
-
+       
         getIdfromDB(idList,myArray);
 
         
