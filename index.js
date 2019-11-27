@@ -1,30 +1,30 @@
 // jshint: es6
+const LOGO = `
+╔═╗┌┬┐┌─┐┌┐┌┌┬┐╦ ╦┌─┐
+╚═╗ │ ├─┤│││ ││║ ║├─┘
+╚═╝ ┴ ┴ ┴┘└┘─┴┘╚═╝┴  
+╔═╗┌┬┐┌─┐┬─┐┌─┐      
+╚═╗ │ │ │├┬┘├┤       
+╚═╝ ┴ └─┘┴└─└─┘      
+╔═╗┌─┐┬─┐┌─┐┌─┐┬─┐   
+╠═╝├─┤├┬┘└─┐├┤ ├┬┘   (c) hello@dmitrygerasimuk.com
+╩  ┴ ┴┴└─└─┘└─┘┴└─       nov, 2019 
+ `;
+
 process.env.NTBA_FIX_350 = '1';
-
-
 var MongoClient = require('mongodb').MongoClient;
-
 const COLLECTION = 'standupparser-base2';
-//const COLLECTION = 'hey';
-
 const url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
+
 var idArray=[];
-
-
-
 const TOKEN = "960806477:AAHDFrxvFaG4KhPUkF9AUXiRUUi2lae_Mb4";
 const CHANNEL = "thatisnotfunny";
 const getUrls = require('get-urls');
-
 const Telegram = require('node-telegram-bot-api')
 const osmosis = require('osmosis');
 const _ = require("underscore");
-
-
 const tg = new Telegram(TOKEN);
-
 const UPDATE_TIMEOUT = 9000;
-
 
 var standObject = {};
 let myArray = [];
@@ -35,8 +35,6 @@ const standUpParser = {
 
     savedArray: [],
     savedIdList: [],
-
-
 };
 
 lastCheck = () => {
@@ -181,11 +179,6 @@ MongoClient.connect(url, function(err, client) {
     });
 }); 
 };
-
-
-
- 
-
 
 
 function thisdifference(a1, a2) {
@@ -448,40 +441,13 @@ osmosis
 
 
  
-/*
-
-console.log('asda');
-
-
-
-osmosis
-    .get('www.google.com')
-    .set({'Title': 'title'})   // альтернатива: `.find('title').set('Title')`
-    .data(console.log); // выведет {'Title': 'Google'}
-    osmosis
-    .get('https://www.google.co.in/search?q=analytics')
-    .find('#botstuff')
-    .set({'related': ['.card-section .brs_col p a']})
-    .data(function(data) {
-        console.log(data);
-    });
-    osmosis
-   .get('https://www.google.co.in/search?q=analytics')
-   .paginate('#navcnt table tr > td a[href]', 5)
-   .find('#botstuff')
-   .set({'related': ['.card-section .brs_col p a']})
-   .data(console.log)
-   .log(console.log) // включить логи
-   .error(console.error);
-   */
-
-//},1000);
+ 
 };
 
 
 
     
-
+console.log(LOGO);
     runParser()
     
     
