@@ -1,21 +1,36 @@
-// jshint: es6
-process.env.NTBA_FIX_350 = '1';
-const fs = require('fs');
+// jshint esversion: 6
 
+const LOGO = `
+╔═╗┌┬┐┌─┐┌┐┌┌┬┐╦ ╦┌─┐
+╚═╗ │ ├─┤│││ ││║ ║├─┘
+╚═╝ ┴ ┴ ┴┘└┘─┴┘╚═╝┴  
+      ╔═╗┌┬┐┌─┐┬─┐┌─┐      
+      ╚═╗ │ │ │├┬┘├┤       
+      ╚═╝ ┴ └─┘┴└─└─┘      (c) hello@dmitrygerasimuk.com
+   ╔═╗┌─┐┬─┐┌─┐┌─┐┬─┐          nov, 2019
+   ╠═╝├─┤├┬┘└─┐├┤ ├┬┘   
+   ╩  ┴ ┴┴└─└─┘└─┘┴└─             
+ `;
+
+process.env.NTBA_FIX_350 = '1';
+var MongoClient = require('mongodb').MongoClient;
+const COLLECTION = 'standupparser-base2';
+const url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
+var clc = require("cli-color");
+var idArray=[];
 const TOKEN = "960806477:AAHDFrxvFaG4KhPUkF9AUXiRUUi2lae_Mb4";
 const CHANNEL = "thatisnotfunny";
 const getUrls = require('get-urls');
-
 const Telegram = require('node-telegram-bot-api')
 const osmosis = require('osmosis');
 const _ = require("underscore");
-
-
 const tg = new Telegram(TOKEN);
-
 const UPDATE_TIMEOUT = 9000;
 
 
+var error = clc.red.bold;
+var warn = clc.yellow;
+var notice = clc.blue;
 var standObject = {};
 let myArray = [];
 let idList = [];
@@ -25,32 +40,151 @@ const standUpParser = {
 
     savedArray: [],
     savedIdList: [],
+};
 
+lastCheck = () => {
+    
+    MongoClient.connect(url, function(err, myclient) {
+        var d = new Date();
+        var myDate=d.toString();
+        let db = myclient.db('heroku_hgmz9f00')
+        let timeBase = db.collection('timeChecked');
+        //songs.insertOne({time:myDate});
+        timeBase.drop();
+        timeBase.insertOne({time:myDate});
+        myclient.close(function(err,date) {
+            if (err) {
+                console.log('Error ',err);
+            } else {
+
+            
+            console.log(`Time  ${myDate} to the base`);
+            }
+            });
+
+
+});
+
+}
+checkBase = (idList,_idList) => {
+    //console.log(idList);
+    console.log('Checking...');
+
+    if (!_.isEmpty(thisdifference(idList,_idList))) {
+
+        
+        console.log(thisdifference(idList,_idList));
+        printNewEvent(thisdifference(idList,_idList),myArray);
+
+
+        } else {
+            console.log(notice('Nothing changed'));
+        }
+        lastCheck();
+}
+
+findInsideDB = (idlist) => {
 
 };
 
+insertNewId = (id) => {
+    MongoClient.connect(url, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection(COLLECTION);
+        songs.insertOne({id:id});
+        client.close(function(err) {
+            console.log(`Added id: ${id} to the base`);
 
-const path = './student.txt';
-
-try {
-  if (fs.existsSync(path)) {
-    //file exists
-    console.log('File exists!');
-    let rawdata = fs.readFileSync('student.txt');
-    standUpParser.savedIdList = JSON.parse(rawdata);
-    let _rawdata = fs.readFileSync('myArray.txt');
-    standUpParser.savedArray = JSON.parse(_rawdata);
+            });
 
 
+});
+};
 
 
-  } else {
-      console.log('No file');
-  }
-} catch(err) {
-  console.error(err)
-  console.log('No file');
-}
+populateBase = (idList) => {
+    MongoClient.connect(url, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection(COLLECTION);
+        idList.forEach(element => {
+            songs.insertOne({id: element});
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+
+};
+
+getIdfromDB = (idList,myArray) => {
+
+
+
+MongoClient.connect(url, function(err, client) {
+    let db = client.db('heroku_hgmz9f00')
+    let songs = db.collection(COLLECTION);
+    var emptyBase;
+    
+
+   
+    songs.find().toArray(function(err,item) {
+        
+        if (item.length === 0 ) {
+            console.log('Base is empty');
+            
+        } else 
+        {
+            console.log('Base is populated');
+          
+        }
+
+    });
+
+    songs.find().each(function(err,item) {
+        
+        if (item != null) {
+        
+         idArray.push(item.id); 
+          //console.log(item.id);
+        }
+
+    });
+
+    
+    
+
+    //noinspection JSDeprecatedSymbols
+    /*
+    songs.find().each(function(err, item) {
+
+    console.log(item.length);
+     if (item != null) {
+          console.log(item.id); 
+        }
+
+    });
+
+    */
+
+    client.close(function(err) {
+        if (idArray.length ===0 ) {
+            console.log('No base');
+            populateBase(idList);
+            return idArray;
+        } else { 
+           // console.log(idArray);
+           console.log('Yes base');
+            checkBase(idList,idArray);
+            return idArray;
+        }
+        
+
+    });
+}); 
+};
+
 
 function thisdifference(a1, a2) {
     var result = [];
@@ -72,7 +206,7 @@ sendMessage = (msg,url) => {
 
     console.log(`Posting telegram ${url}`);
     // tg.sendMessage('@' + CHANNEL, strURL);
-    tg.sendMessage('@'+CHANNEL,'Update');
+    //tg.sendMessage('@'+CHANNEL,'Update');
      tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
      .catch((error) => {
         console.log(error.code);  // => 'ETELEGRAM'
@@ -104,7 +238,7 @@ console.log(eArray.length-1);
                 msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. `;
                 var strURL = getUrls(eArray[j][4]).values().next().value;
                 strURL = strURL.substring(0, strURL.length-3);
-
+                insertNewId(eArray[j][0]);
                 sendMessage(msg,strURL);
 
                 
@@ -173,6 +307,9 @@ function checkUpdates(array) {
         if (_firstID === firstID) { console.log('First ID equal'); };
         if (_len === len) { console.log('Len eq');};
         if (_lastID === lastID) { console.log('last id equal');};
+
+
+       
         //console.log( idList.diff(standUpParser.savedIdList));
         //console.log(_(idList).difference(standUpParser.savedIdList));
         //console.log(_.difference(idList, standUpParser.savedIdList));
@@ -256,6 +393,8 @@ function niceParse(data) {
  };
 
 
+runParser = () => {
+
 
 osmosis
     .get('https://standupstore.ru')
@@ -280,26 +419,26 @@ osmosis
 
 
     }).done(function(){
-        _counter++;
-       console.log(_counter);
+        
         
         //console.log(myArray);
-        
+        // i have myArray
+        // i have idList
+
+
         console.log(myArray.length-1);
         
         console.log(myArray[0][0])
-        let _data = JSON.stringify(idList,null, 2);
-        console.log(_data);
-        fs.writeFileSync('student.txt', _data);
+        
+        // get old ID from base
+        // find new ID
+        // cal print with new ID
+       
+        getIdfromDB(idList,myArray);
 
-        let _array = JSON.stringify(myArray,null, 2);
-        fs.writeFileSync('myArray.txt', _array);
+        
+       
 
-        storeValues(myArray);
-
-        myArray=[];
-        idList=[];
-      
         
 
 
@@ -307,32 +446,13 @@ osmosis
 
 
  
-/*
-
-console.log('asda');
-
+ 
+};
 
 
-osmosis
-    .get('www.google.com')
-    .set({'Title': 'title'})   // альтернатива: `.find('title').set('Title')`
-    .data(console.log); // выведет {'Title': 'Google'}
-    osmosis
-    .get('https://www.google.co.in/search?q=analytics')
-    .find('#botstuff')
-    .set({'related': ['.card-section .brs_col p a']})
-    .data(function(data) {
-        console.log(data);
-    });
-    osmosis
-   .get('https://www.google.co.in/search?q=analytics')
-   .paginate('#navcnt table tr > td a[href]', 5)
-   .find('#botstuff')
-   .set({'related': ['.card-section .brs_col p a']})
-   .data(console.log)
-   .log(console.log) // включить логи
-   .error(console.error);
-   */
 
-//},1000);
-
+    
+console.log(clc.red(LOGO));
+    runParser();
+    
+    
