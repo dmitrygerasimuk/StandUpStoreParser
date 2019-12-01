@@ -49,6 +49,17 @@ lastCheck = () => {
         var myDate=d.toString();
         let db = myclient.db('heroku_hgmz9f00')
         let timeBase = db.collection('timeChecked');
+        timeBase.find().each(function(err,item) {
+        
+            if (item != null) {
+            
+            console.log(`Last checked:   `, notice(item.time)); 
+              //console.log(item.id);
+            }});
+
+   
+            
+        
         //songs.insertOne({time:myDate});
         timeBase.drop();
         timeBase.insertOne({time:myDate});
@@ -58,7 +69,7 @@ lastCheck = () => {
             } else {
 
             
-            console.log(`Time  ${myDate} to the base`);
+            console.log(`Added this time: ${myDate} to the base`);
             }
             });
 
