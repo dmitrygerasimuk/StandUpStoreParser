@@ -44,7 +44,7 @@ const standUpParser = {
 
 lastCheck = () => {
     
-    MongoClient.connect(url, function(err, myclient) {
+    MongoClient.connect(url,  {useUnifiedTopology: true}, function(err, myclient) {
         var d = new Date();
         var myDate=d.toString();
         let db = myclient.db('heroku_hgmz9f00')
@@ -99,7 +99,7 @@ findInsideDB = (idlist) => {
 };
 
 insertNewId = (id) => {
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         let db = client.db('heroku_hgmz9f00')
         let songs = db.collection(COLLECTION);
         songs.insertOne({id:id});
@@ -114,7 +114,7 @@ insertNewId = (id) => {
 
 
 populateBase = (idList) => {
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         let db = client.db('heroku_hgmz9f00')
         let songs = db.collection(COLLECTION);
         idList.forEach(element => {
@@ -133,7 +133,7 @@ getIdfromDB = (idList,myArray) => {
 
 
 
-MongoClient.connect(url, function(err, client) {
+MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
     let db = client.db('heroku_hgmz9f00')
     let songs = db.collection(COLLECTION);
     var emptyBase;
