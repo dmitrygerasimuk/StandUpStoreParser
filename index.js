@@ -1,21 +1,22 @@
-// jshint: es6
+// jshint esversion: 6
+
 const LOGO = `
 ╔═╗┌┬┐┌─┐┌┐┌┌┬┐╦ ╦┌─┐
 ╚═╗ │ ├─┤│││ ││║ ║├─┘
 ╚═╝ ┴ ┴ ┴┘└┘─┴┘╚═╝┴  
-╔═╗┌┬┐┌─┐┬─┐┌─┐      
-╚═╗ │ │ │├┬┘├┤       
-╚═╝ ┴ └─┘┴└─└─┘      
-╔═╗┌─┐┬─┐┌─┐┌─┐┬─┐   
-╠═╝├─┤├┬┘└─┐├┤ ├┬┘   (c) hello@dmitrygerasimuk.com
-╩  ┴ ┴┴└─└─┘└─┘┴└─       nov, 2019 
+      ╔═╗┌┬┐┌─┐┬─┐┌─┐      
+      ╚═╗ │ │ │├┬┘├┤       
+      ╚═╝ ┴ └─┘┴└─└─┘      (c) hello@dmitrygerasimuk.com
+   ╔═╗┌─┐┬─┐┌─┐┌─┐┬─┐          nov, 2019
+   ╠═╝├─┤├┬┘└─┐├┤ ├┬┘   
+   ╩  ┴ ┴┴└─└─┘└─┘┴└─             
  `;
 
 process.env.NTBA_FIX_350 = '1';
 var MongoClient = require('mongodb').MongoClient;
 const COLLECTION = 'standupparser-base2';
 const url = 'mongodb://heroku_hgmz9f00:lbig8lpkh4egih77ct3uh7v0ci@ds047958.mlab.com:47958/heroku_hgmz9f00';
-
+var clc = require("cli-color");
 var idArray=[];
 const TOKEN = "960806477:AAHDFrxvFaG4KhPUkF9AUXiRUUi2lae_Mb4";
 const CHANNEL = "thatisnotfunny";
@@ -26,6 +27,10 @@ const _ = require("underscore");
 const tg = new Telegram(TOKEN);
 const UPDATE_TIMEOUT = 9000;
 
+
+var error = clc.red.bold;
+var warn = clc.yellow;
+var notice = clc.blue;
 var standObject = {};
 let myArray = [];
 let idList = [];
@@ -73,7 +78,7 @@ checkBase = (idList,_idList) => {
 
 
         } else {
-            console.log('Nothing changed');
+            console.log(notice('Nothing changed'));
         }
         lastCheck();
 }
@@ -201,7 +206,7 @@ sendMessage = (msg,url) => {
 
     console.log(`Posting telegram ${url}`);
     // tg.sendMessage('@' + CHANNEL, strURL);
-    tg.sendMessage('@'+CHANNEL,'Update');
+    //tg.sendMessage('@'+CHANNEL,'Update');
      tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
      .catch((error) => {
         console.log(error.code);  // => 'ETELEGRAM'
@@ -447,7 +452,7 @@ osmosis
 
 
     
-console.log(LOGO);
-    runParser()
+console.log(clc.red(LOGO));
+    runParser();
     
     
