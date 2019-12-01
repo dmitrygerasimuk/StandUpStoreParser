@@ -26,7 +26,7 @@ app.get('/', function (req, res) {
 
 
 
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         let db = client.db('heroku_hgmz9f00')
         let songs = db.collection(COLLECTION);
         var emptyBase;
@@ -74,7 +74,7 @@ app.get('/', function (req, res) {
 });
 
 
-  
+
 app.listen(port, function () {
     console.log(`Example app listening on port ${port}`);
   });
