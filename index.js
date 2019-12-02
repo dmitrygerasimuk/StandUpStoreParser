@@ -33,6 +33,7 @@ var warn = clc.yellow;
 var notice = clc.blue;
 var standObject = {};
 let myArray = [];
+let Vault = [];
 let idList = [];
 let _saveID;
 let _counter=0;
@@ -112,6 +113,40 @@ insertNewId = (id) => {
 });
 };
 
+updatesBase = (updates) => {
+   
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection('lastupdate-events');
+        songs.drop();
+        updates.forEach(element => {
+            songs.insertOne(element);
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+
+};
+
+vaultBase = (Vault) => {
+
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection('standup-events');
+        songs.drop();
+        Vault.forEach(element => {
+            songs.insertOne(element);
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+};
 
 populateBase = (idList) => {
     MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
@@ -234,6 +269,7 @@ sendMessage = (msg,url) => {
 printNewEvent = (idArray,eArray) => {
 
 
+
 console.log(eArray.length-1);
 
     for (var i =0; i<=idArray.length-1; i++) {
@@ -246,6 +282,7 @@ console.log(eArray.length-1);
                 console.log(eArray[j][2]); // seats 
                 console.log(eArray[j][3]); // price
                 console.log(eArray[j][4]); // picture
+                
                 msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. `;
                 var strURL = getUrls(eArray[j][4]).values().next().value;
                 strURL = strURL.substring(0, strURL.length-3);
@@ -329,6 +366,7 @@ function checkUpdates(array) {
 
         
         console.log(thisdifference(idList,standUpParser.savedIdList));
+        
         printNewEvent(thisdifference(idList,standUpParser.savedIdList),array);
 
         }
@@ -358,6 +396,7 @@ function checkUpdates(array) {
     if (_saveID === myID) {
         
         console.log('Nothing changed');
+        
 
 
     } else {
@@ -395,7 +434,7 @@ function niceParse(data) {
 
 
     };
-    
+    Vault.push(myObject);
     myArray.push([data.id[1],data.date[1],data.seats[1],data.cost[1],data.img[1]]);
     idList.push(data.id[1]);
 
@@ -439,7 +478,8 @@ osmosis
 
         console.log(myArray.length-1);
         
-        console.log(myArray[0][0])
+        vaultBase(Vault);
+        
         
         // get old ID from base
         // find new ID
