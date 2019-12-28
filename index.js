@@ -27,6 +27,8 @@ const _ = require("underscore");
 const tg = new Telegram(TOKEN);
 const UPDATE_TIMEOUT = 9000;
 
+const cheerio = require("cheerio");
+const $ = require('cheerio');
 
 var error = clc.red.bold;
 var warn = clc.yellow;
@@ -174,6 +176,10 @@ MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
     var emptyBase;
     
 
+    if (songs) {
+
+
+   
    
     songs.find().toArray(function(err,item) {
         
@@ -197,7 +203,9 @@ MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         }
 
     });
-
+} else {
+    console.log('NO SONGS');
+}
     
     
 
@@ -251,15 +259,21 @@ Array.prototype.diff = function(a) {
 sendMessage = (msg,url) => {
 
     console.log(`Posting telegram ${url}`);
+    console.log(`Posting telegram ${msg}`);
+    
     // tg.sendMessage('@' + CHANNEL, strURL);
     //tg.sendMessage('@'+CHANNEL,'Update');
-     tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
+  /*
+  
+  tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
      .catch((error) => {
         console.log(error.code);  // => 'ETELEGRAM'
         console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
         tg.sendMessage('@' + CHANNEL,msg+url);
     });
-     
+     */
+
+   
      
 
 
@@ -426,17 +440,17 @@ function niceParse(data) {
 
 
     var myObject = {
-        id: data.id[1],
-        date:data.date[1],
-        seats:data.seats[1],
-        cost:data.cost[1],
+        id: data.id,
+        date:data.date,
+        seats:data.seats,
+        cost:data.cost,
         img:data.img[1],
 
 
     };
     Vault.push(myObject);
-    myArray.push([data.id[1],data.date[1],data.seats[1],data.cost[1],data.img[1]]);
-    idList.push(data.id[1]);
+    myArray.push([data.id,data.date,data.seats,data.cost,data.img[1]]);
+    idList.push(data.id);
 
 
 
@@ -452,7 +466,7 @@ osmosis
     .paginate('.inf-next-link > a', 20)
     .find('.js-product')
 
-    .set({'id': ['a[href]@data-id'],
+    .set({'id': ['comment()[1]'],
           'date': ['a[href]@data-date'],
           'seats' : ['a[href]@data-seats'],
           'cost' : ['a[href]@data-cost'],
@@ -461,10 +475,24 @@ osmosis
     
 
 
-    .data(function(data) {
+    .data(function(listing) {
        
-       niceParse(data);
+  
+        $(listing.id[0],'.order').each(function() {
+            var data = {};
+            data.id=$(this).attr('data-id');
+            data.date=$(this).attr('data-date');
+            data.seats=$(this).attr('data-seats');
+            data.cost=$(this).attr('data-cost');
+            data.img=listing.img;
+            console.log(data);
+            niceParse(data);
 
+          
+          //console.log('lol');
+        });
+        
+       
       
 
 
