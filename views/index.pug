@@ -30,10 +30,11 @@ html
                  thead
                     tr
                        th PIC
-                       th ID
                        th DATE
                        th SEATS
-                       th COTS
+                       th COST
+                       th LINK
+                    
                  tbody
                  - obj.sort(function(a,b){ return (a.id < b.id)?1:((b.id < a.id)?-1:0);})
                  
@@ -41,7 +42,8 @@ html
                         if n.seats > 0
                             tr
                             td.mytable(style=n.img)
-                            td #{n.id}
                             td= n.date
                             td= n.seats
-                            td= n.cost
+                            td #{n.cost}₽
+                            td
+                                a.button.button-primary(href=n.href) BUY

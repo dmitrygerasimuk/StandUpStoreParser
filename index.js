@@ -445,11 +445,12 @@ function niceParse(data) {
         seats:data.seats,
         cost:data.cost,
         img:data.img[1],
+        href:data.href[1]
 
 
     };
     Vault.push(myObject);
-    myArray.push([data.id,data.date,data.seats,data.cost,data.img[1]]);
+    myArray.push([data.id,data.date,data.seats,data.cost,data.img[1],data.href[1]]);
     idList.push(data.id);
 
 
@@ -470,7 +471,8 @@ osmosis
           'date': ['a[href]@data-date'],
           'seats' : ['a[href]@data-seats'],
           'cost' : ['a[href]@data-cost'],
-          'img': ['.t-bgimg@style']})
+          'img': ['.t-bgimg@style'],
+          'href': ['a[href]@href']})
           
     
 
@@ -485,6 +487,7 @@ osmosis
             data.seats=$(this).attr('data-seats');
             data.cost=$(this).attr('data-cost');
             data.img=listing.img;
+            data.href=listing.href;
             console.log(data);
             niceParse(data);
 

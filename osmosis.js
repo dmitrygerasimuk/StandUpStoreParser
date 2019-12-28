@@ -12,7 +12,7 @@ osmosis
 .find('.js-product')
 
 .set({'id': ['comment()[1]'],
-      'date': ['a[href]@data-date'],
+      'href': ['a[href]@href'],
       'seats' : ['a[href]@data-seats'],
       'cost' : ['a[href]@data-cost'],
       'img': ['.t-bgimg@style']})
@@ -29,6 +29,7 @@ osmosis
     data.seats=$(this).attr('data-seats');
     data.cost=$(this).attr('data-cost');
     data.img=listing.img;
+    data.href=listing.href;
     console.log(data);
 
   
