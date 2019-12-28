@@ -263,7 +263,7 @@ sendMessage = (msg,url) => {
     
     // tg.sendMessage('@' + CHANNEL, strURL);
     //tg.sendMessage('@'+CHANNEL,'Update');
-  /*
+ 
   
   tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
      .catch((error) => {
@@ -271,7 +271,7 @@ sendMessage = (msg,url) => {
         console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
         tg.sendMessage('@' + CHANNEL,msg+url);
     });
-     */
+     
 
    
      
