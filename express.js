@@ -100,7 +100,7 @@ app.get('/', function (req, res) {
         
 
             res.render('index', { 
-                             title: 'Hey',
+                             title: `[${myVault.length}] standupstore-parser ${pjson.version} `,
                             Murl: Murl,
                              welcome: welcome,
                              lastupdate: idArray,
