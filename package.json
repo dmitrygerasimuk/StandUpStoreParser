@@ -1,6 +1,6 @@
 {
   "name": "standupstoreparser",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "parse https://standupstore.ru and send updates to telegram channel",
   "main": "index.js",
   "dependencies": {
