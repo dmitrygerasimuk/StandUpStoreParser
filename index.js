@@ -93,6 +93,7 @@ checkBase = (idList,_idList) => {
 
         } else {
             console.log(notice('Nothing changed'));
+             
         }
         lastCheck();
 }
@@ -412,6 +413,7 @@ function checkUpdates(array) {
     if (_saveID === myID) {
         
         console.log('Nothing changed');
+        console.log(array);
         
 
 
