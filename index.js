@@ -295,9 +295,10 @@ console.log(eArray.length-1);
                 console.log(eArray[j][1]); // date
                 console.log(eArray[j][2]); // seats 
                 console.log(eArray[j][3]); // price
-                console.log(eArray[j][4]); // picture
+                console.log(eArray[j][4]); 
+                console.log(eArray[j][5]);// picture
                 
-                msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. `;
+                msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. ${eArray[j][5]}`;
                 var strURL = getUrls(eArray[j][4]).values().next().value;
                 strURL = strURL.substring(0, strURL.length-3);
                 insertNewId(eArray[j][0]);
@@ -337,6 +338,7 @@ doThePost = (array) => {
     console.log(`мест:      ${array[i][2]}`);
     console.log(`цена:      ${array[i][3]}`);
     console.log(`картинка:  ${array[i][4]}`);
+    console.log(`ссылка:    ${array[i][5]}`);
 
     }
     
@@ -467,10 +469,7 @@ osmosis
     .paginate('.inf-next-link > a', 20)
     .find('.js-product')
 
-    .set({'id': ['comment()[1]'],
-          'date': ['a[href]@data-date'],
-          'seats' : ['a[href]@data-seats'],
-          'cost' : ['a[href]@data-cost'],
+    .set({'comment': ['comment()[1]'],
           'img': ['.t-bgimg@style'],
           'href': ['a[href]@href']})
           
@@ -480,7 +479,7 @@ osmosis
     .data(function(listing) {
        
   
-        $(listing.id[0],'.order').each(function() {
+        $(listing.comment[0],'.order').each(function() {
             var data = {};
             data.id=$(this).attr('data-id');
             data.date=$(this).attr('data-date');
