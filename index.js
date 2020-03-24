@@ -27,12 +27,15 @@ const _ = require("underscore");
 const tg = new Telegram(TOKEN);
 const UPDATE_TIMEOUT = 9000;
 
+const cheerio = require("cheerio");
+const $ = require('cheerio');
 
 var error = clc.red.bold;
 var warn = clc.yellow;
 var notice = clc.blue;
 var standObject = {};
 let myArray = [];
+let Vault = [];
 let idList = [];
 let _saveID;
 let _counter=0;
@@ -44,7 +47,7 @@ const standUpParser = {
 
 lastCheck = () => {
     
-    MongoClient.connect(url, function(err, myclient) {
+    MongoClient.connect(url,  {useUnifiedTopology: true}, function(err, myclient) {
         var d = new Date();
         var myDate=d.toString();
         let db = myclient.db('heroku_hgmz9f00')
@@ -90,6 +93,7 @@ checkBase = (idList,_idList) => {
 
         } else {
             console.log(notice('Nothing changed'));
+             
         }
         lastCheck();
 }
@@ -99,7 +103,7 @@ findInsideDB = (idlist) => {
 };
 
 insertNewId = (id) => {
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         let db = client.db('heroku_hgmz9f00')
         let songs = db.collection(COLLECTION);
         songs.insertOne({id:id});
@@ -112,9 +116,43 @@ insertNewId = (id) => {
 });
 };
 
+updatesBase = (updates) => {
+   
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection('lastupdate-events');
+        songs.drop();
+        updates.forEach(element => {
+            songs.insertOne(element);
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+
+};
+
+vaultBase = (Vault) => {
+
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
+        let db = client.db('heroku_hgmz9f00')
+        let songs = db.collection('standup-events');
+        songs.drop();
+        Vault.forEach(element => {
+            songs.insertOne(element);
+            
+        });
+        client.close(function(err) {
+        console.log('Populated base');
+        });
+
+});
+};
 
 populateBase = (idList) => {
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
         let db = client.db('heroku_hgmz9f00')
         let songs = db.collection(COLLECTION);
         idList.forEach(element => {
@@ -133,12 +171,16 @@ getIdfromDB = (idList,myArray) => {
 
 
 
-MongoClient.connect(url, function(err, client) {
+MongoClient.connect(url,   {useUnifiedTopology: true}, function(err, client) {
     let db = client.db('heroku_hgmz9f00')
     let songs = db.collection(COLLECTION);
     var emptyBase;
     
 
+    if (songs) {
+
+
+   
    
     songs.find().toArray(function(err,item) {
         
@@ -162,7 +204,9 @@ MongoClient.connect(url, function(err, client) {
         }
 
     });
-
+} else {
+    console.log('NO SONGS');
+}
     
     
 
@@ -216,15 +260,21 @@ Array.prototype.diff = function(a) {
 sendMessage = (msg,url) => {
 
     console.log(`Posting telegram ${url}`);
+    console.log(`Posting telegram ${msg}`);
+    
     // tg.sendMessage('@' + CHANNEL, strURL);
     //tg.sendMessage('@'+CHANNEL,'Update');
-     tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
+ 
+  
+  tg.sendPhoto('@' + CHANNEL, url, { caption: msg })
      .catch((error) => {
         console.log(error.code);  // => 'ETELEGRAM'
         console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
         tg.sendMessage('@' + CHANNEL,msg+url);
     });
      
+
+   
      
 
 
@@ -232,6 +282,7 @@ sendMessage = (msg,url) => {
 };
 
 printNewEvent = (idArray,eArray) => {
+
 
 
 console.log(eArray.length-1);
@@ -245,8 +296,10 @@ console.log(eArray.length-1);
                 console.log(eArray[j][1]); // date
                 console.log(eArray[j][2]); // seats 
                 console.log(eArray[j][3]); // price
-                console.log(eArray[j][4]); // picture
-                msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. `;
+                console.log(eArray[j][4]); 
+                console.log(eArray[j][5]);// picture
+                
+                msg = `${eArray[j][1]}, мест:${eArray[j][2]}, цена:${eArray[j][3]}. ${eArray[j][5]}`;
                 var strURL = getUrls(eArray[j][4]).values().next().value;
                 strURL = strURL.substring(0, strURL.length-3);
                 insertNewId(eArray[j][0]);
@@ -286,6 +339,7 @@ doThePost = (array) => {
     console.log(`мест:      ${array[i][2]}`);
     console.log(`цена:      ${array[i][3]}`);
     console.log(`картинка:  ${array[i][4]}`);
+    console.log(`ссылка:    ${array[i][5]}`);
 
     }
     
@@ -329,6 +383,7 @@ function checkUpdates(array) {
 
         
         console.log(thisdifference(idList,standUpParser.savedIdList));
+        
         printNewEvent(thisdifference(idList,standUpParser.savedIdList),array);
 
         }
@@ -358,6 +413,8 @@ function checkUpdates(array) {
     if (_saveID === myID) {
         
         console.log('Nothing changed');
+        console.log(array);
+        
 
 
     } else {
@@ -387,17 +444,18 @@ function niceParse(data) {
 
 
     var myObject = {
-        id: data.id[1],
-        date:data.date[1],
-        seats:data.seats[1],
-        cost:data.cost[1],
+        id: data.id,
+        date:data.date,
+        seats:data.seats,
+        cost:data.cost,
         img:data.img[1],
+        href:data.href[1]
 
 
     };
-    
-    myArray.push([data.id[1],data.date[1],data.seats[1],data.cost[1],data.img[1]]);
-    idList.push(data.id[1]);
+    Vault.push(myObject);
+    myArray.push([data.id,data.date,data.seats,data.cost,data.img[1],data.href[1]]);
+    idList.push(data.id);
 
 
 
@@ -413,19 +471,32 @@ osmosis
     .paginate('.inf-next-link > a', 20)
     .find('.js-product')
 
-    .set({'id': ['a[href]@data-id'],
-          'date': ['a[href]@data-date'],
-          'seats' : ['a[href]@data-seats'],
-          'cost' : ['a[href]@data-cost'],
-          'img': ['.t-bgimg@style']})
+    .set({'comment': ['comment()[1]'],
+          'img': ['.t-bgimg@style'],
+          'href': ['a[href]@href']})
           
     
 
 
-    .data(function(data) {
+    .data(function(listing) {
        
-       niceParse(data);
+  
+        $(listing.comment[0],'.order').each(function() {
+            var data = {};
+            data.id=$(this).attr('data-id');
+            data.date=$(this).attr('data-date');
+            data.seats=$(this).attr('data-seats');
+            data.cost=$(this).attr('data-cost');
+            data.img=listing.img;
+            data.href=listing.href;
+            console.log(data);
+            niceParse(data);
 
+          
+          //console.log('lol');
+        });
+        
+       
       
 
 
@@ -439,7 +510,8 @@ osmosis
 
         console.log(myArray.length-1);
         
-        console.log(myArray[0][0])
+        vaultBase(Vault);
+        
         
         // get old ID from base
         // find new ID

@@ -1,0 +1,49 @@
+doctype html
+html
+  head
+    title= title
+    style
+     
+      include ../css/skeleton.css
+      
+  body
+    div.container  
+        .row
+            div.eight.columns
+                p.h7 Welcome to standupstore-parser, version #{version} <br> Last updated: #[strong #{lastupdate}]
+            div.four.columns
+                a.button.button-primary(href=Murl) TELEGRAM
+                     
+
+ 
+    div.container  
+        .row
+            div.two-half.column(style="margin-top: 1%")
+                .row.optional
+                    .eight.columns
+                        h4 Где остались места? 
+                    .four.columns
+                        p.h7 Сортировка по изменениям
+                
+              
+                table.table.table-striped
+                 thead
+                    tr
+                       th PIC
+                       th DATE
+                       th SEATS
+                       th COST
+                       th LINK
+                    
+                 tbody
+                 - obj.sort(function(a,b){ return (a.id < b.id)?1:((b.id < a.id)?-1:0);})
+                 
+                    each n in obj
+                        if n.seats > 0
+                            tr
+                            td.mytable(style=n.img)
+                            td= n.date
+                            td= n.seats
+                            td #{n.cost}₽
+                            td
+                                a.button.button-primary(href=n.href) BUY
